@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BETMAN – The Arena</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --neon:#00F5A0;
+  --neon2:#00D4FF;
+  --neon3:#FF2D78;
+  --bg:#04080F;
+  --bg2:#070D18;
+  --bg3:#0B1525;
+  --bg4:#0F1E35;
+  --panel:#0D1A2E;
+  --border:rgba(0,245,160,0.12);
+  --border2:rgba(0,212,255,0.18);
+  --text:#C8E6FF;
+  --muted:#4A6A8A;
+  --live:#FF2D78;
+  --win:#00F5A0;
+  --loss:#FF2D78;
+  --gold:#FFD700;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Rajdhani',sans-serif;
+  font-size:15px;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* grid bg */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;
+  z-index:0;
+}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--neon);opacity:.3;border-radius:4px;}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:relative;z-index:10;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  height:38px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;color:var(--muted);
+}
+.tb-left{display:flex;align-items:center;gap:24px;}
+.tb-live{color:var(--neon);display:flex;align-items:center;gap:6px;}
+.tb-dot{width:6px;height:6px;background:var(--neon);border-radius:50%;box-shadow:0 0 6px var(--neon);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.tb-right{display:flex;align-items:center;gap:20px;}
+.tb-right a{color:var(--muted);text-decoration:none;transition:color .15s;}
+.tb-right a:hover{color:var(--neon);}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(4,8,15,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border2);
+  padding:0 24px;
+  height:68px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+header::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--neon2),var(--neon),transparent);
+  opacity:.5;
+}
+
+.logo{
+  font-family:'Orbitron',sans-serif;
+  font-size:26px;font-weight:900;
+  letter-spacing:4px;
+  color:var(--neon);
+  text-shadow:0 0 20px rgba(0,245,160,.5);
+  display:flex;align-items:center;gap:12px;
+}
+.logo-icon{
+  width:38px;height:38px;
+  border:2px solid var(--neon);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  box-shadow:0 0 16px rgba(0,245,160,.3),inset 0 0 12px rgba(0,245,160,.05);
+}
+.logo span{color:var(--neon2);}
+
+.nav{display:flex;align-items:center;gap:2px;}
+.nav a{
+  padding:8px 14px;
+  color:var(--muted);
+  text-decoration:none;
+  font-weight:700;
+  font-size:13px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  border-radius:4px;
+  transition:all .15s;
+  position:relative;
+}
+.nav a::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:2px;background:var(--neon);transition:all .2s;}
+.nav a:hover{color:var(--text);}
+.nav a:hover::after,.nav a.active::after{left:8px;right:8px;}
+.nav a.active{color:var(--neon);}
+
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.balance-box{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:8px 16px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  display:flex;align-items:center;gap:10px;
+}
+.balance-box .bal{color:var(--neon);font-size:15px;font-weight:700;}
+.btn{
+  padding:9px 20px;
+  border-radius:5px;
+  font-family:'Orbitron',sans-serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  border:none;
+  transition:all .15s;
+}
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--neon2);
+}
+.btn-ghost:hover{background:rgba(0,212,255,.08);box-shadow:0 0 12px rgba(0,212,255,.2);}
+.btn-solid{
+  background:var(--neon);
+  color:#000;
+}
+.btn-solid:hover{box-shadow:0 0 20px rgba(0,245,160,.5);transform:translateY(-1px);}
+
+/* ── SPORT STRIP ── */
+.sport-strip{
+  position:relative;z-index:9;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.sport-strip::-webkit-scrollbar{display:none;}
+.s-tab{
+  padding:13px 18px;
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:700;
+  color:var(--muted);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  transition:all .15s;
+}
+.s-tab:hover{color:var(--text);}
+.s-tab.active{color:var(--neon);border-bottom-color:var(--neon);}
+.s-tab .cnt{
+  background:var(--bg4);
+  color:var(--muted);
+  font-size:9px;
+  padding:2px 6px;border-radius:3px;
+  font-family:'Share Tech Mono',monospace;
+}
+.s-tab.active .cnt{background:rgba(0,245,160,.15);color:var(--neon);}
+
+/* ── TICKER ── */
+.ticker{
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;padding:7px 0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+}
+.ticker-track{display:flex;animation:scroll 50s linear infinite;width:max-content;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.t-item{padding:0 40px;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:10px;}
+.t-item .tm{color:var(--text);}
+.t-item .od{color:var(--neon);font-weight:700;}
+.t-sep{color:var(--border2);}
+
+/* ── MAIN LAYOUT ── */
+.arena{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:240px 1fr 300px;
+  min-height:calc(100vh - 148px);
+}
+
+/* ── LEFT NAV ── */
+.left-panel{
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  padding:0;
+  overflow-y:auto;
+}
+.lp-section{border-bottom:1px solid var(--border);}
+.lp-head{
+  padding:12px 18px;
+  font-family:'Orbitron',monospace;
+  font-size:9px;font-weight:700;
+  color:var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.lp-item{
+  padding:10px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+  color:var(--muted);
+  font-size:13px;font-weight:600;
+  border-left:2px solid transparent;
+  transition:all .12s;
+}
+.lp-item:hover{color:var(--text);background:var(--bg3);}
+.lp-item.active{color:var(--neon);background:rgba(0,245,160,.05);border-left-color:var(--neon);}
+.lp-badge{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;padding:2px 8px;border-radius:3px;
+}
+.lp-badge.live{background:rgba(255,45,120,.15);color:var(--live);border:1px solid rgba(255,45,120,.2);}
+.lp-badge.norm{background:var(--bg4);color:var(--muted);}
+
+/* ── CENTRE ── */
+.centre{background:var(--bg);overflow-y:auto;}
+
+/* HERO SCOREBOARD */
+.scoreboard{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border2);
+  padding:22px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.scoreboard::before{
+  content:'';
+  position:absolute;top:-60px;right:-60px;
+  width:250px;height:250px;
+  background:radial-gradient(circle,rgba(0,245,160,.07) 0%,transparent 70%);
+}
+.scoreboard::after{
+  content:'';
+  position:absolute;bottom:-60px;left:100px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(0,212,255,.05) 0%,transparent 70%);
+}
+.sb-stat{text-align:center;}
+.sb-val{
+  font-family:'Orbitron',sans-serif;
+  font-size:30px;font-weight:900;
+  color:var(--neon);
+  text-shadow:0 0 15px rgba(0,245,160,.4);
+  line-height:1;
+}
+.sb-lbl{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.sb-divider{width:1px;height:50px;background:var(--border);}
+.sb-center{text-align:center;}
+.sb-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:22px;font-weight:900;
+  color:var(--text);
+  letter-spacing:3px;
+}
+.sb-sub{font-size:11px;color:var(--muted);letter-spacing:1px;margin-top:4px;}
+
+/* FEATURED */
+.feat-wrap{padding:20px 28px 10px;}
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.sec-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;font-weight:700;
+  color:var(--text);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+}
+.live-pill{
+  background:var(--live);
+  color:#fff;
+  font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:3px;
+  letter-spacing:1.5px;
+  animation:pulse .9s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+.see-all{font-size:11px;color:var(--neon2);cursor:pointer;letter-spacing:1px;font-family:'Share Tech Mono',monospace;}
+
+/* FEATURED MATCH CARD */
+.feat-card{
+  background:var(--panel);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+}
+.feat-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--neon2),var(--neon),var(--neon2));
+}
+.feat-top{
+  padding:12px 20px;
+  background:rgba(0,212,255,.04);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;
+}
+.feat-body{padding:24px 28px;}
+.feat-teams{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;}
+.feat-team{flex:1;text-align:center;}
+.feat-crest{
+  width:60px;height:60px;border-radius:12px;
+  background:var(--bg4);
+  border:1px solid var(--border2);
+  margin:0 auto 10px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;
+  font-size:16px;font-weight:900;
+  color:var(--neon2);
+}
+.feat-name{font-size:15px;font-weight:700;color:var(--text);}
+.feat-country{font-size:11px;color:var(--muted);}
+.feat-score-box{text-align:center;}
+.feat-score{
+  font-family:'Orbitron',sans-serif;
+  font-size:48px;font-weight:900;
+  color:var(--live);
+  text-shadow:0 0 20px rgba(255,45,120,.4);
+  line-height:1;letter-spacing:4px;
+}
+.feat-min{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;color:var(--live);
+  margin-top:6px;
+  animation:blink 1s infinite;
+}
+.feat-odds{display:flex;gap:10px;}
+.f-odd{
+  flex:1;
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:13px 8px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+  position:relative;
+  overflow:hidden;
+}
+.f-odd::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 0%,rgba(0,245,160,.03) 100%);}
+.f-odd:hover{border-color:var(--neon);background:rgba(0,245,160,.06);transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,245,160,.15);}
+.f-odd.sel{border-color:var(--neon);background:rgba(0,245,160,.1);}
+.f-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;font-family:'Share Tech Mono',monospace;}
+.f-val{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
+.f-odd:hover .f-val,.f-odd.sel .f-val{color:var(--neon);}
+
+/* MATCHES */
+.matches-wrap{padding:0 28px 28px;}
+.match-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:8px;
+  overflow:hidden;
+  transition:border-color .15s;
+  cursor:default;
+}
+.match-card:hover{border-color:var(--border2);}
+.match-card.is-live{border-color:rgba(255,45,120,.2);}
+.mc-head{
+  padding:8px 16px;
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:10px;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;
+}
+.mc-league{display:flex;align-items:center;gap:8px;}
+.mc-badge{
+  padding:3px 9px;border-radius:3px;
+  font-size:10px;font-weight:700;
+  font-family:'Share Tech Mono',monospace;
+}
+.mc-badge.live{background:rgba(255,45,120,.15);color:var(--live);border:1px solid rgba(255,45,120,.25);}
+.mc-badge.soon{background:var(--bg4);color:var(--muted);}
+.mc-body{padding:12px 16px;display:flex;align-items:center;gap:12px;}
+.mc-teams{flex:1;}
+.mc-row{display:flex;align-items:center;justify-content:space-between;padding:3px 0;}
+.mc-name{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.mc-abbr{
+  width:26px;height:26px;border-radius:5px;
+  background:var(--bg4);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:8px;font-weight:900;
+  color:var(--neon2);
+}
+.mc-score{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:var(--live);}
+.mc-vs{font-size:10px;color:var(--muted);padding:3px 0;font-family:'Share Tech Mono',monospace;}
+.mc-odds{display:flex;gap:6px;}
+.o-btn{
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:9px 12px;
+  text-align:center;
+  cursor:pointer;
+  min-width:68px;
+  transition:all .15s;
+}
+.o-btn:hover{border-color:var(--neon);background:rgba(0,245,160,.06);}
+.o-btn.sel{border-color:var(--neon);background:rgba(0,245,160,.1);}
+.o-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
+.o-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
+.o-btn:hover .o-val,.o-btn.sel .o-val{color:var(--neon);}
+.mc-more button{
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:5px;
+  padding:8px 10px;
+  color:var(--muted);
+  font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  font-family:'Share Tech Mono',monospace;
+  white-space:nowrap;
+}
+.mc-more button:hover{border-color:var(--neon2);color:var(--neon2);}
+
+/* ── BETSLIP RIGHT ── */
+.slip-panel{
+  background:var(--bg2);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:110px;
+  height:calc(100vh - 110px);
+  overflow-y:auto;
+}
+.slip-hdr{
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  padding:16px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+}
+.slip-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;font-weight:700;
+  letter-spacing:2px;
+  display:flex;align-items:center;gap:10px;
+}
+.slip-cnt{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--neon);color:#000;
+  font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;
+}
+.slip-tabs{display:flex;border-bottom:1px solid var(--border);}
+.slip-tab{
+  flex:1;padding:10px;text-align:center;
+  font-size:11px;font-weight:700;color:var(--muted);
+  cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;
+  border-bottom:2px solid transparent;transition:all .15s;
+  font-family:'Share Tech Mono',monospace;
+}
+.slip-tab.active{color:var(--neon);border-bottom-color:var(--neon);}
+.slip-empty{padding:50px 20px;text-align:center;color:var(--muted);}
+.slip-empty .ei{font-size:36px;margin-bottom:14px;opacity:.3;filter:grayscale(1);}
+.slip-empty p{font-size:13px;line-height:1.7;font-family:'Share Tech Mono',monospace;}
+.bet-entry{padding:14px 18px;border-bottom:1px solid var(--border);position:relative;}
+.be-remove{
+  position:absolute;top:12px;right:14px;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--bg4);border:1px solid var(--border);
+  color:var(--muted);cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.be-remove:hover{background:rgba(255,45,120,.15);color:var(--live);border-color:rgba(255,45,120,.3);}
+.be-match{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
+.be-sel{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.be-mkt{font-size:10px;color:var(--muted);margin-bottom:10px;font-family:'Share Tech Mono',monospace;}
+.be-odd-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.be-odd-val{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--neon);text-shadow:0 0 10px rgba(0,245,160,.3);}
+.stake-row{display:flex;align-items:center;gap:8px;}
+.stake-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;font-family:'Share Tech Mono',monospace;}
+.stake-in{
+  flex:1;
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:5px;
+  padding:9px 12px;
+  color:var(--neon);
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;font-weight:700;
+  outline:none;
+  transition:border-color .15s;
+}
+.stake-in:focus{border-color:var(--neon);box-shadow:0 0 0 2px rgba(0,245,160,.1);}
+.payout-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:12px;}
+.payout-lbl{color:var(--muted);font-family:'Share Tech Mono',monospace;}
+.payout-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--win);}
+.quick-row{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.q-btn{
+  background:var(--bg4);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:4px 10px;
+  font-size:11px;font-weight:700;
+  color:var(--muted);
+  cursor:pointer;transition:all .12s;
+  font-family:'Share Tech Mono',monospace;
+}
+.q-btn:hover{border-color:var(--neon);color:var(--neon);}
+.slip-footer{
+  padding:16px 18px;
+  border-top:1px solid var(--border);
+  background:var(--bg2);
+  position:sticky;bottom:0;z-index:10;
+}
+.tot-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.tot-lbl{font-size:10px;color:var(--muted);letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;}
+.tot-val{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;}
+.tot-val.stakes{color:var(--text);}
+.tot-val.payout{color:var(--neon);text-shadow:0 0 10px rgba(0,245,160,.3);}
+.place-btn{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,var(--neon) 0%,var(--neon2) 100%);
+  border:none;border-radius:7px;
+  color:#000;
+  font-family:'Orbitron',sans-serif;
+  font-size:14px;font-weight:900;letter-spacing:3px;
+  text-transform:uppercase;cursor:pointer;
+  transition:all .15s;
+  position:relative;overflow:hidden;
+}
+.place-btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 50%);
+}
+.place-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,245,160,.35);}
+.place-btn:active{transform:translateY(0);}
+.odds-accept{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:var(--muted);font-family:'Share Tech Mono',monospace;}
+.tog{width:34px;height:18px;background:var(--bg4);border-radius:9px;position:relative;cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.tog.on{background:rgba(0,245,160,.2);border-color:var(--neon);}
+.tog::after{content:'';position:absolute;width:12px;height:12px;background:var(--muted);border-radius:50%;top:2px;left:2px;transition:all .2s;}
+.tog.on::after{left:18px;background:var(--neon);box-shadow:0 0 6px var(--neon);}
+
+/* MARKETS */
+.mkt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 28px 28px;}
+.mkt-card{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:8px;padding:14px;
+}
+.mkt-title{
+  font-size:10px;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;
+  letter-spacing:1px;margin-bottom:10px;
+  text-transform:uppercase;
+}
+.mkt-opts{display:flex;gap:6px;flex-wrap:wrap;}
+.mkt-opt{
+  flex:1;min-width:60px;
+  background:var(--bg4);border:1px solid var(--border);
+  border-radius:5px;padding:9px 6px;text-align:center;
+  cursor:pointer;transition:all .15s;
+}
+.mkt-opt:hover{border-color:var(--neon2);background:rgba(0,212,255,.05);}
+.mo-lbl{font-size:9px;color:var(--muted);margin-bottom:4px;font-family:'Share Tech Mono',monospace;}
+.mo-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
+
+/* PROMO */
+.promo{
+  margin:0 28px 20px;
+  background:var(--panel);
+  border:1px solid rgba(255,215,0,.2);
+  border-radius:10px;
+  padding:16px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.promo::before{
+  content:'⚡';
+  position:absolute;right:100px;
+  font-size:100px;opacity:.04;
+  line-height:1;top:-10px;
+}
+.promo-txt .top{font-size:10px;color:var(--muted);letter-spacing:2px;font-family:'Share Tech Mono',monospace;text-transform:uppercase;}
+.promo-txt .main{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--gold);text-shadow:0 0 15px rgba(255,215,0,.3);}
+.promo-txt .sub{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Share Tech Mono',monospace;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-radius:12px;width:400px;
+  overflow:hidden;
+  animation:slideUp .2s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.modal-top{
+  background:var(--bg3);
+  border-bottom:1px solid var(--border);
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;
+}
+.modal-top::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--neon),transparent);
+}
+.modal-ttl{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;}
+.modal-x{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;transition:color .15s;}
+.modal-x:hover{color:var(--live);}
+.modal-bd{padding:24px;}
+.fg{margin-bottom:16px;}
+.fg label{display:block;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;font-family:'Share Tech Mono',monospace;}
+.fg input{
+  width:100%;background:var(--bg);
+  border:1px solid var(--border);border-radius:6px;
+  padding:11px 14px;color:var(--text);
+  font-size:14px;outline:none;transition:border-color .15s;
+  font-family:'Rajdhani',sans-serif;
+}
+.fg input:focus{border-color:var(--neon);box-shadow:0 0 0 2px rgba(0,245,160,.08);}
+.modal-ft{padding:0 24px 24px;}
+.modal-sub{text-align:center;font-size:12px;color:var(--muted);margin-top:12px;font-family:'Share Tech Mono',monospace;}
+.modal-sub a{color:var(--neon);cursor:pointer;}
+.full-btn{width:100%;padding:13px;border-radius:6px;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  border-left:3px solid var(--neon);
+  border-radius:8px;padding:14px 18px;
+  font-size:13px;z-index:600;
+  transform:translateX(140%);transition:transform .3s ease;
+  max-width:280px;
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+.toast.show{transform:translateX(0);}
+.toast-title{font-weight:700;color:var(--neon);margin-bottom:3px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;}
+.toast-msg{font-size:13px;color:var(--text);}
+
+/* JACKPOT BANNER */
+.jackpot-strip{
+  background:linear-gradient(90deg,var(--bg3) 0%,rgba(255,215,0,.08) 50%,var(--bg3) 100%);
+  border-bottom:1px solid rgba(255,215,0,.15);
+  padding:10px 28px;
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  font-family:'Orbitron',sans-serif;
+  font-size:13px;
+}
+.jp-label{color:var(--muted);font-size:10px;letter-spacing:2px;}
+.jp-val{color:var(--gold);font-size:20px;font-weight:900;text-shadow:0 0 15px rgba(255,215,0,.3);}
+.jp-btn{
+  background:var(--gold);color:#000;
+  padding:7px 18px;border-radius:5px;
+  font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;
+  letter-spacing:2px;cursor:pointer;border:none;
+  transition:all .15s;
+}
+.jp-btn:hover{box-shadow:0 0 15px rgba(255,215,0,.4);}
+
+footer{
+  position:relative;z-index:1;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:18px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;color:var(--muted);
+  font-family:'Share Tech Mono',monospace;
+}
+.ft-links{display:flex;gap:20px;}
+.ft-links a{color:var(--muted);text-decoration:none;}
+.ft-links a:hover{color:var(--neon);}
+.ft-right{display:flex;align-items:center;gap:10px;}
+.age-box{border:1px solid var(--muted);border-radius:3px;padding:2px 7px;font-weight:700;font-size:11px;}
+
+@media(max-width:1100px){
+  .arena{grid-template-columns:0 1fr 280px;}
+  .left-panel{display:none;}
+}
+@media(max-width:720px){
+  .arena{grid-template-columns:1fr;}
+  .slip-panel{display:none;}
+  .nav{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-live"><div class="tb-dot"></div>SYS_LIVE: <span id="liveTop">247</span> MATCHES</div>
+    <span>TODAY: 1,482 EVENTS</span>
+    <span>SERVER: <span style="color:var(--neon)">ONLINE ◉</span></span>
+  </div>
+  <div class="tb-right">
+    <a href="#">HELP</a>
+    <a href="#">RESPONSIBLE PLAY</a>
+    <a href="#">EN</a>
+    <a href="#">KES</a>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">B</div>
+    BET<span>MAN</span>
+  </div>
+  <nav class="nav">
+    <a href="#" class="active">Live</a>
+    <a href="#">Sports</a>
+    <a href="#">In-Play</a>
+    <a href="#">Casino</a>
+    <a href="#">Virtuals</a>
+    <a href="#">Jackpot</a>
+    <a href="#">Promos</a>
+    <a href="#">Results</a>
+  </nav>
+  <div class="hdr-right">
+    <div class="balance-box">⬡ BAL: <span class="bal" id="balDisplay">KES 5,000.00</span></div>
+    <button class="btn btn-ghost" onclick="openModal('loginMod')">LOGIN</button>
+    <button class="btn btn-solid" onclick="openModal('regMod')">REGISTER</button>
+    <button class="btn btn-solid" onclick="openModal('regMod')">DEPOSIT</button>
+  </div>
+</header>
+
+<!-- SPORT STRIP -->
+<div class="sport-strip">
+  <div class="s-tab active" onclick="pickTab(this)">⚽ Football <span class="cnt">184</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏀 Basketball <span class="cnt">43</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🎾 Tennis <span class="cnt">31</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏏 Cricket <span class="cnt">18</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏈 Am. Football <span class="cnt">12</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏒 Ice Hockey <span class="cnt">9</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🥊 MMA/Boxing <span class="cnt">7</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏉 Rugby <span class="cnt">6</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🏐 Volleyball <span class="cnt">5</span></div>
+  <div class="s-tab" onclick="pickTab(this)">🎱 Snooker <span class="cnt">3</span></div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="tickerEl"></div>
+</div>
+
+<!-- JACKPOT STRIP -->
+<div class="jackpot-strip">
+  <span class="jp-label">⚡ BETMAN MEGA JACKPOT</span>
+  <span class="jp-val" id="jackpotVal">KES 10,247,500</span>
+  <button class="jp-btn" onclick="toast('Jackpot!','17 correct scores wins the jackpot. Good luck!')">PLAY NOW</button>
+  <span class="jp-label">PICK 17 CORRECT SCORES</span>
+</div>
+
+<!-- ARENA -->
+<div class="arena">
+
+  <!-- LEFT -->
+  <aside class="left-panel">
+    <div class="lp-section">
+      <div class="lp-head">Top Leagues</div>
+      <div class="lp-item active"><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</span><span class="lp-badge live">12 LIVE</span></div>
+      <div class="lp-item"><span>🇪🇸 La Liga</span><span class="lp-badge live">8 LIVE</span></div>
+      <div class="lp-item"><span>🇩🇪 Bundesliga</span><span class="lp-badge live">6 LIVE</span></div>
+      <div class="lp-item"><span>🇮🇹 Serie A</span><span class="lp-badge live">5 LIVE</span></div>
+      <div class="lp-item"><span>🇫🇷 Ligue 1</span><span class="lp-badge norm">9</span></div>
+      <div class="lp-item"><span>🌍 Champions League</span><span class="lp-badge live">3 LIVE</span></div>
+      <div class="lp-item"><span>🌍 Europa League</span><span class="lp-badge norm">4</span></div>
+      <div class="lp-item"><span>🇰🇪 KPL Kenya</span><span class="lp-badge live">2 LIVE</span></div>
+      <div class="lp-item"><span>🌎 Copa Libertadores</span><span class="lp-badge norm">6</span></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-head">More</div>
+      <div class="lp-item"><span>🇳🇱 Eredivisie</span><span class="lp-badge norm">5</span></div>
+      <div class="lp-item"><span>🇵🇹 Primeira Liga</span><span class="lp-badge norm">5</span></div>
+      <div class="lp-item"><span>🇷🇺 Russian Premier</span><span class="lp-badge norm">4</span></div>
+      <div class="lp-item"><span>🇹🇷 Süper Lig</span><span class="lp-badge norm">4</span></div>
+      <div class="lp-item"><span>🇧🇷 Brasileirao</span><span class="lp-badge norm">3</span></div>
+      <div class="lp-item"><span>🇺🇸 MLS</span><span class="lp-badge norm">7</span></div>
+      <div class="lp-item"><span>🌍 AFCON Qual.</span><span class="lp-badge norm">8</span></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-head">Specials</div>
+      <div class="lp-item">🏆 Outrights</div>
+      <div class="lp-item">📈 Boosted Odds</div>
+      <div class="lp-item">🎰 Jackpot KES 10M</div>
+      <div class="lp-item">⚡ Virtuals</div>
+    </div>
+  </aside>
+
+  <!-- CENTRE -->
+  <main class="centre">
+
+    <!-- SCOREBOARD -->
+    <div class="scoreboard">
+      <div class="sb-stat"><div class="sb-val" id="liveCount">247</div><div class="sb-lbl">Live Now</div></div>
+      <div class="sb-divider"></div>
+      <div class="sb-stat"><div class="sb-val">1,482</div><div class="sb-lbl">Today's Events</div></div>
+      <div class="sb-divider"></div>
+      <div class="sb-center">
+        <div class="sb-title">THE ARENA</div>
+        <div class="sb-sub">REAL-TIME ODDS · LIVE STREAMING · INSTANT PAYOUTS</div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-stat"><div class="sb-val">5,200+</div><div class="sb-lbl">Markets Live</div></div>
+      <div class="sb-divider"></div>
+      <div class="sb-stat"><div class="sb-val">KES 10M</div><div class="sb-lbl">Jackpot</div></div>
+    </div>
+
+    <!-- PROMO -->
+    <div style="padding:20px 28px 0;">
+      <div class="promo">
+        <div class="promo-txt">
+          <div class="top">⚡ Welcome Bonus</div>
+          <div class="main">100% UP TO KES 5,000</div>
+          <div class="sub">Min. deposit KES 200 · 3x wagering · T&Cs apply</div>
+        </div>
+        <button class="btn btn-solid" onclick="openModal('regMod')">CLAIM BONUS</button>
+      </div>
+    </div>
+
+    <!-- FEATURED -->
+    <div class="feat-wrap">
+      <div class="section-hdr">
+        <div class="sec-title">⭐ Featured Match <span class="live-pill">LIVE</span></div>
+        <span class="see-all">+ MORE_MARKETS</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-top">
+          <span>🌍 UEFA CHAMPIONS LEAGUE · GROUP STAGE</span>
+          <span style="color:var(--live);animation:blink 1s infinite;">● LIVE</span>
+        </div>
+        <div class="feat-body">
+          <div class="feat-teams">
+            <div class="feat-team">
+              <div class="feat-crest">RM</div>
+              <div class="feat-name">Real Madrid</div>
+              <div class="feat-country">🇪🇸 Spain</div>
+            </div>
+            <div class="feat-score-box">
+              <div class="feat-score" id="fScore">2–1</div>
+              <div class="feat-min" id="fMin">⏱ 67'</div>
+            </div>
+            <div class="feat-team">
+              <div class="feat-crest">MCI</div>
+              <div class="feat-name">Man City</div>
+              <div class="feat-country">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</div>
+            </div>
+          </div>
+          <div class="feat-odds">
+            <div class="f-odd" onclick="addBet('Real Madrid Win','Match Result',1.85)">
+              <div class="f-lbl">REAL MADRID</div><div class="f-val" id="fo1">1.85</div>
+            </div>
+            <div class="f-odd" onclick="addBet('Draw','Match Result',3.40)">
+              <div class="f-lbl">DRAW</div><div class="f-val" id="foX">3.40</div>
+            </div>
+            <div class="f-odd" onclick="addBet('Man City Win','Match Result',2.10)">
+              <div class="f-lbl">MAN CITY</div><div class="f-val" id="fo2">2.10</div>
+            </div>
+            <div class="f-odd" onclick="addBet('Over 2.5 Goals','Total Goals',1.72)">
+              <div class="f-lbl">OVER 2.5</div><div class="f-val">1.72</div>
+            </div>
+            <div class="f-odd" onclick="addBet('BTTS Yes','BTTS',1.60)">
+              <div class="f-lbl">BTTS YES</div><div class="f-val">1.60</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE MATCHES -->
+    <div class="feat-wrap" style="padding-bottom:0;">
+      <div class="section-hdr">
+        <div class="sec-title">🔴 Live Matches <span class="live-pill">LIVE</span></div>
+        <span class="see-all">VIEW_ALL →</span>
+      </div>
+    </div>
+    <div class="matches-wrap" id="liveList"></div>
+
+    <!-- UPCOMING -->
+    <div class="feat-wrap" style="padding-bottom:0;">
+      <div class="section-hdr">
+        <div class="sec-title">📅 Upcoming</div>
+        <span class="see-all">VIEW_ALL →</span>
+      </div>
+    </div>
+    <div class="matches-wrap" id="upcomingList"></div>
+
+    <!-- MARKETS -->
+    <div class="feat-wrap" style="padding-bottom:0;">
+      <div class="section-hdr">
+        <div class="sec-title">📊 Popular Markets</div>
+      </div>
+    </div>
+    <div class="mkt-grid" id="mktGrid"></div>
+
+    <footer>
+      <div class="ft-links">
+        <a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a>
+        <a href="#">Responsible Gaming</a><a href="#">Affiliates</a><a href="#">Contact</a>
+      </div>
+      <div class="ft-right">
+        <span class="age-box">18+</span>
+        <span>Gambling can be addictive. Play responsibly.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- BETSLIP -->
+  <aside class="slip-panel">
+    <div class="slip-hdr">
+      <div class="slip-title">BET_SLIP <span class="slip-cnt" id="slipCnt">0</span></div>
+      <button class="btn btn-ghost" style="padding:5px 12px;font-size:10px;" onclick="clearAll()">CLEAR</button>
+    </div>
+    <div class="slip-tabs">
+      <div class="slip-tab active" onclick="pickSlipTab(this,'single')">SINGLE</div>
+      <div class="slip-tab" onclick="pickSlipTab(this,'multi')">MULTI</div>
+      <div class="slip-tab" onclick="pickSlipTab(this,'system')">SYSTEM</div>
+    </div>
+    <div id="slipBody">
+      <div class="slip-empty">
+        <div class="ei">🎯</div>
+        <p>SELECT ODDS TO<br>ADD TO SLIP</p>
+      </div>
+    </div>
+    <div id="slipFt" style="display:none;">
+      <div class="slip-footer">
+        <div class="tot-row">
+          <span class="tot-lbl">Total Stake</span>
+          <span class="tot-val stakes" id="totStake">KES 0.00</span>
+        </div>
+        <div class="tot-row">
+          <span class="tot-lbl">Potential Win</span>
+          <span class="tot-val payout" id="totPayout">KES 0.00</span>
+        </div>
+        <button class="place-btn" onclick="placeBet()">PLACE BET ▶</button>
+        <div class="odds-accept">
+          <div class="tog on" onclick="this.classList.toggle('on')"></div>
+          <span>Accept any odds changes</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- LOGIN -->
+<div class="overlay" id="loginMod">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-ttl">ACCESS ARENA</div>
+      <button class="modal-x" onclick="closeModal('loginMod')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="fg"><label>Phone / Email</label><input type="text" placeholder="e.g. 0712 345 678"></div>
+      <div class="fg"><label>Password</label><input type="password" placeholder="••••••••"></div>
+      <div style="text-align:right;margin-bottom:16px;"><a href="#" style="font-size:11px;color:var(--neon2);font-family:'Share Tech Mono',monospace;">FORGOT PASSWORD?</a></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-solid full-btn" onclick="closeModal('loginMod');toast('ACCESS GRANTED','Welcome back to the Arena!')">LOGIN →</button>
+      <div class="modal-sub">No account? <a onclick="closeModal('loginMod');openModal('regMod')">REGISTER NOW</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="overlay" id="regMod">
+  <div class="modal">
+    <div class="modal-top">
+      <div class="modal-ttl">JOIN THE ARENA</div>
+      <button class="modal-x" onclick="closeModal('regMod')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="fg"><label>Full Name</label><input type="text" placeholder="Enter your full name"></div>
+      <div class="fg"><label>Phone Number</label><input type="text" placeholder="+254 7XX XXX XXX"></div>
+      <div class="fg"><label>Email Address</label><input type="email" placeholder="you@example.com"></div>
+      <div class="fg"><label>Password</label><input type="password" placeholder="Min 8 characters"></div>
+      <div style="font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;">By registering you confirm you are 18+ and agree to our T&Cs.</div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-solid full-btn" onclick="closeModal('regMod');toast('ACCOUNT CREATED ✓','Welcome! Your 100% bonus has been activated.')">CREATE ACCOUNT →</button>
+      <div class="modal-sub">Have an account? <a onclick="closeModal('regMod');openModal('loginMod')">LOGIN</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl">
+  <div class="toast-title" id="toastTitle"></div>
+  <div class="toast-msg" id="toastMsg"></div>
+</div>
+<section id="deposit" style="padding:20px; background:#111; color:#fff;">
+  <h2>Deposit Funds</h2>
+
+  <form onsubmit="handleDeposit(event)">
+    <label>Amount (KES):</label><br>
+    <input type="number" id="amount" required><br><br>
+
+    <label>Payment Method:</label><br>
+    <select id="method">
+      <option value="mpesa">M-Pesa</option>
+      <option value="card">Card</option>
+    </select><br><br>
+
+    <button type="submit">Deposit</button>
+  </form>
+
+  <p id="message"></p>
+</section>
+
+<script>
+function handleDeposit(e) {
+  e.preventDefault();
+
+  let amount = document.getElementById("amount").value;
+  let method = document.getElementById("method").value;
+
+  document.getElementById("message").innerText =
+    "Processing " + amount + " KES via " + method + "... (Demo only)";
+}
+</script>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const live = [
+  {id:1,league:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League',home:'Arsenal',away:'Liverpool',score:'1-1',min:'54',h:2.10,d:3.20,a:2.80,o25:1.88,btts:1.70},
+  {id:2,league:'🇪🇸 La Liga',home:'Barcelona',away:'Atletico Madrid',score:'0-1',min:'71',h:1.75,d:3.80,a:3.50,o25:2.20,btts:1.85},
+  {id:3,league:'🇩🇪 Bundesliga',home:'Bayern Munich',away:'Dortmund',score:'3-1',min:'83',h:1.40,d:4.50,a:5.00,o25:1.45,btts:1.55},
+  {id:4,league:'🇮🇹 Serie A',home:'Inter Milan',away:'AC Milan',score:'0-0',min:'29',h:2.30,d:3.10,a:2.60,o25:1.95,btts:1.80},
+  {id:5,league:'🇰🇪 KPL Kenya',home:'Gor Mahia',away:'AFC Leopards',score:'1-0',min:'62',h:1.65,d:3.30,a:3.90,o25:2.10,btts:1.90},
+];
+
+const upcoming = [
+  {id:10,league:'🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League',home:'Chelsea',away:'Man United',time:'21:00',h:2.40,d:3.10,a:2.55,o25:1.80,btts:1.68},
+  {id:11,league:'🌍 Champions League',home:'PSG',away:'Juventus',time:'22:00',h:1.90,d:3.50,a:3.10,o25:1.75,btts:1.72},
+  {id:12,league:'🇪🇸 La Liga',home:'Real Betis',away:'Villarreal',time:'20:30',h:2.70,d:3.00,a:2.40,o25:1.90,btts:1.75},
+  {id:13,league:'🇩🇪 Bundesliga',home:'Leverkusen',away:'RB Leipzig',time:'20:30',h:2.10,d:3.25,a:2.90,o25:1.85,btts:1.78},
+  {id:14,league:'🌍 Europa League',home:'Roma',away:'Sevilla',time:'23:00',h:2.20,d:3.30,a:2.70,o25:1.88,btts:1.74},
+];
+
+const mkts = [
+  {title:'Asian Handicap',opts:[{l:'-0.5 Arsenal',v:'1.92'},{l:'+0.5 Liverpool',v:'1.88'}]},
+  {title:'Total Goals',opts:[{l:'Over 1.5',v:'1.40'},{l:'Under 1.5',v:'2.70'}]},
+  {title:'First Goalscorer',opts:[{l:'Salah',v:'4.50'},{l:'Odegaard',v:'5.20'},{l:'Nunez',v:'6.00'}]},
+  {title:'Correct Score',opts:[{l:'1-1',v:'6.00'},{l:'2-1',v:'7.50'},{l:'1-0',v:'5.50'}]},
+  {title:'Half-Time Result',opts:[{l:'Home',v:'2.80'},{l:'Draw',v:'2.20'},{l:'Away',v:'3.60'}]},
+  {title:'Double Chance',opts:[{l:'1X',v:'1.28'},{l:'12',v:'1.32'},{l:'X2',v:'1.55'}]},
+];
+
+// ── BETSLIP ───────────────────────────────────────────────────────────────────
+let bets=[], slipMode='single';
+
+function addBet(sel,mkt,odd){
+  const idx=bets.findIndex(b=>b.sel===sel);
+  if(idx>-1){bets.splice(idx,1);toast('REMOVED',`${sel} removed from slip`);}
+  else{bets.push({sel,mkt,odd,stake:''});toast('ADDED ✓',`${sel} @ ${odd.toFixed(2)}`);}
+  renderSlip();
+}
+
+function renderSlip(){
+  document.getElementById('slipCnt').textContent=bets.length;
+  const body=document.getElementById('slipBody');
+  const ft=document.getElementById('slipFt');
+  if(!bets.length){
+    body.innerHTML='<div class="slip-empty"><div class="ei">🎯</div><p>SELECT ODDS TO<br>ADD TO SLIP</p></div>';
+    ft.style.display='none';return;
+  }
+  ft.style.display='block';
+  body.innerHTML=bets.map((b,i)=>{
+    const pay=b.stake?(parseFloat(b.stake)*b.odd).toFixed(2):'0.00';
+    return `<div class="bet-entry">
+      <button class="be-remove" onclick="rmBet(${i})">✕</button>
+      <div class="be-match">⚽ FOOTBALL · ${b.mkt}</div>
+      <div class="be-sel">${b.sel}</div>
+      <div class="be-odd-row"><span style="font-size:10px;color:var(--muted);font-family:'Share Tech Mono',monospace;">ODDS</span><span class="be-odd-val">${b.odd.toFixed(2)}</span></div>
+      <div class="stake-row">
+        <span class="stake-lbl">KES</span>
+        <input class="stake-in" type="number" placeholder="0" min="50" value="${b.stake}" oninput="updStake(${i},this.value)">
+      </div>
+      <div class="payout-row"><span class="payout-lbl">POTENTIAL WIN</span><span class="payout-val">KES ${pay}</span></div>
+      <div class="quick-row">
+        <div class="q-btn" onclick="setStake(${i},100)">100</div>
+        <div class="q-btn" onclick="setStake(${i},200)">200</div>
+        <div class="q-btn" onclick="setStake(${i},500)">500</div>
+        <div class="q-btn" onclick="setStake(${i},1000)">1K</div>
+        <div class="q-btn" onclick="setStake(${i},5000)">5K</div>
+      </div>
+    </div>`;
+  }).join('');
+  calcTotals();
+}
+
+function updStake(i,v){bets[i].stake=v;calcTotals();}
+function setStake(i,v){bets[i].stake=v;renderSlip();}
+function rmBet(i){bets.splice(i,1);renderSlip();}
+function clearAll(){bets=[];renderSlip();}
+function pickSlipTab(el,m){slipMode=m;document.querySelectorAll('.slip-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+
+function calcTotals(){
+  let ts=0,tp=0;
+  if(slipMode==='multi'){
+    let mo=1;
+    bets.forEach(b=>{if(b.stake){ts+=parseFloat(b.stake);mo*=b.odd;}});
+    tp=ts*mo;
+  } else {
+    bets.forEach(b=>{if(b.stake){ts+=parseFloat(b.stake);tp+=parseFloat(b.stake)*b.odd;}});
+  }
+  document.getElementById('totStake').textContent=`KES ${ts.toFixed(2)}`;
+  document.getElementById('totPayout').textContent=`KES ${tp.toFixed(2)}`;
+}
+
+function placeBet(){
+  if(!bets.some(b=>b.stake&&parseFloat(b.stake)>0)){toast('NO STAKE','Enter a stake amount first.');return;}
+  toast(`BET PLACED ✓`,`${bets.length} selection(s) confirmed!`);
+  bets=[];renderSlip();
+}
+
+// ── RENDER MATCHES ────────────────────────────────────────────────────────────
+function matchCard(m,isLive){
+  const timeBadge=isLive
+    ?`<span class="mc-badge live">⏱ ${m.min}'</span>`
+    :`<span class="mc-badge soon">🕐 ${m.time}</span>`;
+  return `
+  <div class="match-card ${isLive?'is-live':''}">
+    <div class="mc-head">
+      <span class="mc-league">${m.league}</span>
+      ${timeBadge}
+    </div>
+    <div class="mc-body">
+      <div class="mc-teams">
+        <div class="mc-row">
+          <div class="mc-name"><div class="mc-abbr">${m.home.slice(0,2).toUpperCase()}</div>${m.home}</div>
+          ${isLive?`<span class="mc-score">${m.score.split('-')[0]}</span>`:''}
+        </div>
+        ${!isLive?`<div class="mc-vs">VS</div>`:''}
+        <div class="mc-row">
+          <div class="mc-name"><div class="mc-abbr">${m.away.slice(0,2).toUpperCase()}</div>${m.away}</div>
+          ${isLive?`<span class="mc-score">${m.score.split('-')[1]}</span>`:''}
+        </div>
+      </div>
+      <div class="mc-odds">
+        <div class="o-btn" onclick="addBet('${m.home} Win','Match Result',${m.h})"><div class="o-lbl">1</div><div class="o-val">${m.h.toFixed(2)}</div></div>
+        <div class="o-btn" onclick="addBet('Draw','Match Result',${m.d})"><div class="o-lbl">X</div><div class="o-val">${m.d.toFixed(2)}</div></div>
+        <div class="o-btn" onclick="addBet('${m.away} Win','Match Result',${m.a})"><div class="o-lbl">2</div><div class="o-val">${m.a.toFixed(2)}</div></div>
+        <div class="o-btn" onclick="addBet('Over 2.5','Total Goals',${m.o25})"><div class="o-lbl">O2.5</div><div class="o-val">${m.o25.toFixed(2)}</div></div>
+        <div class="o-btn" onclick="addBet('BTTS Yes','BTTS',${m.btts})"><div class="o-lbl">BTTS</div><div class="o-val">${m.btts.toFixed(2)}</div></div>
+      </div>
+      <div class="mc-more"><button>+${Math.floor(Math.random()*80+50)}</button></div>
+    </div>
+  </div>`;
+}
+
+function renderAll(){
+  document.getElementById('liveList').innerHTML=live.map(m=>matchCard(m,true)).join('');
+  document.getElementById('upcomingList').innerHTML=upcoming.map(m=>matchCard(m,false)).join('');
+  document.getElementById('mktGrid').innerHTML=mkts.map(mk=>`
+    <div class="mkt-card">
+      <div class="mkt-title">${mk.title}</div>
+      <div class="mkt-opts">
+        ${mk.opts.map(o=>`<div class="mkt-opt" onclick="addBet('${o.l}','${mk.title}',${parseFloat(o.v)})"><div class="mo-lbl">${o.l}</div><div class="mo-val">${o.v}</div></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── TICKER ────────────────────────────────────────────────────────────────────
+function buildTicker(){
+  const items=[
+    ...live.map(m=>`${m.home.toUpperCase()} ${m.score} ${m.away.toUpperCase()} [${m.min}']`),
+    'BOOSTED: Man City v Arsenal → 2.75','JACKPOT KES 10M · PICK 17','VIRTUALS: Every 3 mins',
+    'CHAMPIONS LEAGUE FINAL ODDS NOW LIVE','Enhanced accumulator odds available',
+  ];
+  const d=[...items,...items];
+  document.getElementById('tickerEl').innerHTML=d.map(t=>`<span class="t-item"><span class="tm">${t}</span></span><span class="t-sep"> | </span>`).join('');
+}
+
+// ── LIVE UPDATES ──────────────────────────────────────────────────────────────
+function liveUpdate(){
+  live.forEach(m=>{
+    ['h','d','a','o25','btts'].forEach(k=>{
+      if(Math.random()<0.2){
+        const delta=(Math.random()-.5)*0.12;
+        m[k]=Math.max(1.01,Math.round((m[k]+delta)*100)/100);
+      }
+    });
+    const min=parseInt(m.min);
+    if(min<90) m.min=String(Math.min(90,min+1));
+  });
+  renderAll();
+  // featured min
+  const el=document.getElementById('fMin');
+  const cur=parseInt(el.textContent);
+  if(!isNaN(cur)&&cur<90) el.textContent=`⏱ ${cur+1}'`;
+  // jackpot ticker
+  const jv=document.getElementById('jackpotVal');
+  const cur2=parseInt(jv.textContent.replace(/[^0-9]/g,''));
+  jv.textContent='KES '+((cur2+Math.floor(Math.random()*500+100)).toLocaleString());
+  // live count
+  const n=240+Math.floor(Math.random()*20);
+  document.getElementById('liveTop').textContent=n;
+  document.getElementById('liveCount').textContent=n;
+}
+
+// ── MODAL / TOAST ─────────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+
+let toastTimer;
+function toast(title,msg){
+  clearTimeout(toastTimer);
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  const el=document.getElementById('toastEl');
+  el.classList.add('show');
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function pickTab(el){
+  document.querySelectorAll('.s-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderAll();
+buildTicker();
+setInterval(liveUpdate,4000);
+</script>
+</body>
+</html>
